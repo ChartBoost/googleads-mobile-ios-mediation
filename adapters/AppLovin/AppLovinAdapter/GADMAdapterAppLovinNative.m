@@ -12,7 +12,6 @@
 #import "GADMAdapterAppLovin.h"
 #import "GADMAdapterAppLovinConstant.h"
 #import "GADMAdapterAppLovinExtras.h"
-#import "GADMAdapterAppLovinQueue.h"
 #import "GADMAdapterAppLovinUtils.h"
 #import "GADMAppLovinMediatedNativeAppInstallAd.h"
 #import "GADMAppLovinMediatedNativeUnifiedAd.h"
@@ -63,7 +62,7 @@
 
   self.adTypes = adTypes;
 
-  [[ALSdk shared].nativeAdService loadNativeAdGroupOfCount:1 andNotify:self];
+  [[ALSdk shared].nativeAdService loadNextAdAndNotify:self];
 }
 
 - (void)stopBeingDelegate {
@@ -138,8 +137,9 @@
 
 - (void)notifyFailureWithErrorCode:(NSInteger)errorCode {
   [GADMAdapterAppLovinUtils log:@"Native ad failed to load &ld", errorCode];
-  NSError *error =
-      [NSError errorWithDomain:GADMAdapterAppLovinConstant.errorDomain code:errorCode userInfo:nil];
+  NSError *error = [NSError errorWithDomain:GADMAdapterAppLovinConstant.errorDomain
+                                       code:errorCode
+                                   userInfo:nil];
   [self.connector adapter:self didFailAd:error];
 }
 

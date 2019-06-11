@@ -1,5 +1,14 @@
 # DuAd Audience Network Mediation Adapter for Google Mobile Ads SDK for iOS
 
+## Version 1.1.2.1
+- Added code to initialize DuAd SDK before requesting ads.
+
+## Version 1.1.2.0
+- Verified compatibility with DuAd SDK 1.1.2.
+
+## Version 1.1.1.0
+- Verified compatibility with DuAd SDK 1.1.1.
+
 ## Version 1.1.0.0
 - Verified compatibility with DuAd SDK 1.1.0.
 

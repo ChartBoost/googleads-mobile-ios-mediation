@@ -1,5 +1,25 @@
 # AppLovin Adapter for Google Mobile Ads SDK for iOS
 
+## 6.6.1.0
+- Verified compatibility with AppLovin SDK 6.6.1.
+- Fixed a crash caused by calling a completionHandler on a nil object.
+- Updated the adapter to handle multiple interstitial requests.
+- Added support for flexible banner ad sizes.
+
+## 6.3.0.0
+- Verified compatibility with AppLovin SDK 6.3.0.
+- Updated the adapter to use the new rewarded API.
+- Now requires Google Mobile Ads SDK version 7.41.0 or higher.
+
+## 6.2.0.0
+- Verified compatibility with AppLovin SDK 6.2.0.
+
+## 6.1.4.0
+- Verified compatibility with AppLovin SDK 6.1.4.
+
+## 5.1.2.0
+- Verified compatibility with AppLovin SDK 5.1.2.
+
 ## 5.1.1.0
 - Verified compatibility with AppLovin SDK 5.1.1.
 
