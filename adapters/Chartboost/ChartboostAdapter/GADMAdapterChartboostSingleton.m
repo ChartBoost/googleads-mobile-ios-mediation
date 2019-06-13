@@ -18,7 +18,7 @@
 #import "GADMAdapterChartboostDataProvider.h"
 #import "GADMChartboostError.h"
 
-@interface GADMAdapterChartboostSingleton () <ChartboostDelegate> {
+@interface GADMAdapterChartboostSingleton () <ChartboostDelegate, CHBBannerDelegate> {
   /// Hash Map to hold all interstitial adapter delegates.
   NSMapTable<NSString *, id<GADMAdapterChartboostDataProvider, ChartboostDelegate>>
       *_interstitialAdapterDelegates;
@@ -34,6 +34,9 @@
 
   NSMutableArray<ChartbbostInitCompletionHandler> *_completionHandlers;
 }
+
+@property (nonatomic) NSMapTable<CHBBanner *, id<CHBBannerDelegate>> *bannersToDelegates;
+@property (nonatomic) NSMutableArray<CHBBanner *> *loadingBanners;
 
 @end
 
@@ -61,6 +64,8 @@
     _queue = dispatch_queue_create("com.google.admob.chartboost_adapter_singleton",
                                    DISPATCH_QUEUE_CONCURRENT);
     _completionHandlers = [[NSMutableArray alloc] init];
+    _bannersToDelegates = [NSMapTable weakToWeakObjectsMapTable];
+    _loadingBanners = [[NSMutableArray alloc] init];
   }
   return self;
 }
@@ -202,6 +207,26 @@
   [Chartboost showInterstitial:[adapterDelegate getAdLocation]];
 }
 
+#pragma mark - Banner methods
+
+- (void)configureBannerWithSize:(GADAdSize)adSize
+                       location:(nonnull NSString *)location
+                       delegate:(nullable id<CHBBannerDelegate>)delegate
+                 viewController:(nullable UIViewController *)viewController
+                         extras:(nullable GADMChartboostExtras *)extras
+{
+    if (extras.frameworkVersion && extras.framework) {
+        [Chartboost setFramework:extras.framework
+                     withVersion:extras.frameworkVersion];
+    }
+    
+    CHBBanner *banner = [[CHBBanner alloc] initWithSize:adSize.size location:location delegate:self];
+    banner.automaticallyRefreshesContent = NO;
+    [self.loadingBanners addObject:banner];
+    [self.bannersToDelegates setObject:delegate forKey:banner];
+    [banner showFromViewController:viewController];
+}
+
 #pragma mark - Chartboost Delegate mathods -
 
 - (void)didInitialize:(BOOL)status {
@@ -294,5 +319,35 @@
     (id<GADMAdapterChartboostDataProvider, ChartboostDelegate>)adapterDelegate {
   [self removeInterstitialAdapterDelegate:adapterDelegate];
 }
+
+#pragma mark - Chartboost Banner Delegate Methods
+
+- (void)didCacheAd:(CHBCacheEvent *)event error:(nullable CHBCacheError *)error
+{
+    // We keep a strong reference to the banner only until it is loaded, since at that point the view is sent to GMA (as a parameter in a delegate call) and it is its responsibility to retain it.
+    [[self.bannersToDelegates objectForKey:(CHBBanner *)event.ad] didCacheAd:event error:error];
+    [self.loadingBanners removeObject:(CHBBanner *)event.ad];
+}
+
+- (void)willShowAd:(CHBShowEvent *)event error:(nullable CHBShowError *)error
+{
+    [[self.bannersToDelegates objectForKey:(CHBBanner *)event.ad] willShowAd:event error:error];
+}
+
+- (void)didShowAd:(CHBShowEvent *)event error:(nullable CHBShowError *)error
+{
+    [[self.bannersToDelegates objectForKey:(CHBBanner *)event.ad] didShowAd:event error:error];
+}
+
+- (void)didClickAd:(CHBClickEvent *)event error:(nullable CHBClickError *)error
+{
+    [[self.bannersToDelegates objectForKey:(CHBBanner *)event.ad] didClickAd:event error:error];
+}
+
+- (void)didFinishHandlingClick:(CHBClickEvent *)event error:(nullable CHBClickError *)error
+{
+    [[self.bannersToDelegates objectForKey:(CHBBanner *)event.ad] didFinishHandlingClick:event error:error];
+}
+
 
 @end
