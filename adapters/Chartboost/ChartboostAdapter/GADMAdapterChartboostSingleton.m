@@ -32,7 +32,7 @@
 
   ChartboostInitState _initState;
 
-  NSMutableArray<ChartbbostInitCompletionHandler> *_completionHandlers;
+  NSMutableArray<ChartboostInitCompletionHandler> *_completionHandlers;
 }
 
 @property (nonatomic) NSMapTable<CHBBanner *, id<CHBBannerDelegate>> *bannersToDelegates;
@@ -73,7 +73,7 @@
 
 - (void)startWithAppId:(NSString *)appId
           appSignature:(NSString *)appSignature
-     completionHandler:(ChartbbostInitCompletionHandler)completionHandler {
+     completionHandler:(ChartboostInitCompletionHandler)completionHandler {
     @synchronized (self) {
         if (_initState == INITIALIZED) {
             completionHandler(nil);
@@ -233,13 +233,13 @@
 - (void)didInitialize:(BOOL)status {
   if (status) {
     _initState = INITIALIZED;
-    for (ChartbbostInitCompletionHandler completionHandler in _completionHandlers) {
+    for (ChartboostInitCompletionHandler completionHandler in _completionHandlers) {
       completionHandler(nil);
     }
   } else {
     _initState = UNINITIALIZED;
     NSError *error = GADChartboostErrorWithDescription(@"Failed to initialize Chartboost SDK.");
-    for (ChartbbostInitCompletionHandler completionHandler in _completionHandlers) {
+    for (ChartboostInitCompletionHandler completionHandler in _completionHandlers) {
       completionHandler(error);
     }
   }
